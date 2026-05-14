@@ -60,13 +60,14 @@ public class UserService {
 		if (repo.existsById(userId)) {
 
 
-			repo.deleteById(userId);
+
 			RestClient restClient = RestClient.builder().baseUrl("http://localhost:8080/").build();
 
 			String logoutResponse = restClient.post().uri("/auth/logout")
 					.headers(header -> header.addAll(incomingHeaders)).retrieve().body(String.class);
 			if (logoutResponse.equals("Logged out successfully"))
 				finalResponse = logoutResponse + finalResponse;
+			repo.deleteById(userId);
 
 			return finalResponse + userId;
 		}

@@ -58,6 +58,7 @@ public class TaskService {
 		existing.setStatus(task.getStatus());
 		existing.setDueDate(task.getDueDate());
 		existing.setUpdatedAt(Instant.now());
+		existing.setVersion(task.getVersion());
 		return repo.saveAndFlush(existing);
 	}
 

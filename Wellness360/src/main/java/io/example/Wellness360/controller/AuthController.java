@@ -29,6 +29,7 @@ public class AuthController {
 	BlacklistedTokenService blacklistService;
 	@Autowired
 	JwtService jwtService;
+	@Autowired
 	MyUserDetailService myUserDetailsService;
 
 	@PostMapping("auth/register")

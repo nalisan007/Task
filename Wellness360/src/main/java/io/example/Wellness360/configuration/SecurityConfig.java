@@ -15,8 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 @Configuration
 public class SecurityConfig {
 	@Autowired
@@ -30,6 +28,7 @@ public class SecurityConfig {
 		return http.csrf(customizer -> customizer.disable()) // Since FrontEnd may be in different domain in production,
 																// CSRF need to be disabled
 				.authorizeHttpRequests(request -> request
+						// .requestMatchers(PathPatternRequestMatcher.pathPattern("/h2-console/**")).permitAll()
 						.requestMatchers("/auth/login", "/auth/register", "/", "/swagger-ui/**", "/v3/api-docs*/**",
 								"/openapi.yml",
 								"/swagger-ui.html", "/h2-console/**")
@@ -40,12 +39,7 @@ public class SecurityConfig {
 				.authenticationProvider(authenticationProvider())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-				.logout(logout -> logout.logoutUrl("/auth/logout").invalidateHttpSession(true)
-						.deleteCookies("JSESSIONID")
-						.logoutSuccessHandler((req, res, authentication) -> {
-							res.setStatus(HttpServletResponse.SC_OK);
-							res.getWriter().write("Logged out");
-						}))
+
 				.build();
 	}
 
