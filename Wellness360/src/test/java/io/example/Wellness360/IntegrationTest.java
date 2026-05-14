@@ -5,9 +5,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -15,10 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import io.example.Wellness360.repository.UserRepository;
 import io.example.Wellness360.service.UserService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 class IntegrationTest {
 
 	@Autowired
@@ -26,9 +30,11 @@ class IntegrationTest {
 
 	@Autowired
 	UserService userService;
+	@Autowired
+	UserRepository userRepo;
 	static String token;
 
-	@BeforeEach
+	@BeforeAll
 	public void registerUser_ObtainToken() throws Exception {
 
 		String userpass = """
@@ -47,12 +53,12 @@ class IntegrationTest {
 
 	}
 
-	@AfterEach
+	@AfterAll
 	public void logout_DeleteUser() throws Exception {
 
 		mockmvc.perform(post("/auth/logout").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().string("Logged out"));
-		userService.deleteById(userService.findUserByEmail("dummyuser@gmail.com"));
+		userRepo.deleteById(userRepo.findByEmail("dummyuser@gmail.com").get().getUserId());
 
 	}
 

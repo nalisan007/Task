@@ -112,10 +112,6 @@
     <version>3.2.6</version>
     <scope>compile</scope>
 </dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>

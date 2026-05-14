@@ -2,22 +2,26 @@ package io.example.Wellness360.service;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import io.example.Wellness360.entity.PasswordDto;
 import io.example.Wellness360.entity.Users;
 import io.example.Wellness360.exception.UserException;
 import io.example.Wellness360.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
 	UserRepository repo;
 	AuthenticationManager authManager;
 	JwtService jwtService;
+
 
 
 
@@ -47,17 +51,29 @@ public class UserService {
 		throw new UserException("User does not exist with email " + u.get().getEmail());
 	}
 
-	public String deleteById(long userId) {
+	@Transactional
+	public String deleteById(String email, HttpHeaders incomingHeaders) {
+
+		long userId = findUserByEmail(email);
+		String finalResponse = " User Deleted with Id ";
+
 		if (repo.existsById(userId)) {
 
-			repo.deleteById(userId);
 
-			return "User Deleted with Id " + userId;
+			repo.deleteById(userId);
+			RestClient restClient = RestClient.builder().baseUrl("http://localhost:8080/").build();
+
+			String logoutResponse = restClient.post().uri("/auth/logout")
+					.headers(header -> header.addAll(incomingHeaders)).retrieve().body(String.class);
+			if (logoutResponse.equals("Logged out successfully"))
+				finalResponse = logoutResponse + finalResponse;
+
+			return finalResponse + userId;
 		}
 		throw new UserException("No User exist with User ID " + userId);
 	}
 
-
+	@Transactional
 	public String changePassword(PasswordDto pass) {
 		if (!repo.existsById(pass.getUserId()))
 			throw new UserException("User doesn't exist");
@@ -88,6 +104,8 @@ public class UserService {
 		this.repo = repo;
 		this.authManager = authManager;
 		this.jwtService = jwtService;
+		
+
 	}
 
 }

@@ -9,4 +9,5 @@ import io.example.Wellness360.entity.Task;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
 
+
 }

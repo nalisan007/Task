@@ -72,7 +72,8 @@ public class AuthController {
 
 	}
 
-	// Manual Endpoint for admin to delete expired token to reduce database growing
+	// Manual Endpoint for admin [username must be admin@admin.com] to delete
+	// expired token to reduce database growing
 	// indefinetly
 	@PreAuthorize("authentication.name == 'admin@admin.com'")
 	@GetMapping("deleteExpiredToken")
