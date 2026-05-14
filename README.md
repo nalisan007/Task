@@ -88,4 +88,4 @@ Maven
 
 #### Postman Collection File: 
 
->[Postman Collection JSON File]()
+>[Postman Collection JSON File](https://github.com/nalisan007/Task/blob/main/Wellness360/Wellness360.postman_collection.json)
